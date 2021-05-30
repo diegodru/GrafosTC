@@ -1,9 +1,12 @@
+#include "cgraph.h"
 #include "grafo.h"
 #include "draw.h"
 #include "gvc.h"
 #include "menu.h"
 
-#define COLOR "skyblue"
+#define CAMINO_COLOR "skyblue"
+#define SHAPE "circle"
+
 static GVC_t *gvc;
 static Agraph_t *g;
 static Grafo *grafo;
@@ -52,6 +55,7 @@ void initGrafo(unsigned int cantidadNodos, GVC_t **gvc, Agraph_t **g,
       char name[3];
       sprintf(name, "%i", i);
       nodos[i] = agnode(*g, name, 1);
+      agsafeset(nodos[i], "shape", SHAPE, "");
    }
 }
 
@@ -69,12 +73,12 @@ void colorearCamino(int src, int dst){
    int *trayecto, *tr_aristas;
    int nodosTraversados = caminoValido(grafo, &trayecto, &tr_aristas, src, dst);
    for(int i = 0; i < nodosTraversados; i++){
-      agsafeset(nodos[trayecto[i]], "color", COLOR, "");
+      agsafeset(nodos[trayecto[i]], "color", CAMINO_COLOR, "");
       agsafeset(nodos[trayecto[i]], "style", "filled", "");
    }
    agsafeset(aristas[tr_aristas[0]], "label", "inicio", "");
    for(int i = 0; i < nodosTraversados - 1; i++){
-      agsafeset(aristas[tr_aristas[i]], "color", COLOR, "");
+      agsafeset(aristas[tr_aristas[i]], "color", CAMINO_COLOR, "");
    }
    agsafeset(aristas[tr_aristas[nodosTraversados - 2]], "label", "final", "");
 }
@@ -83,12 +87,12 @@ void colorearCaminoValido(int *nodos_a_traversar, int cantidadNodos){
    if(!validarCamino(grafo, nodos_a_traversar, cantidadNodos))
       return;
    for(int i = 0; i < cantidadNodos; i++){
-      agsafeset(nodos[nodos_a_traversar[i]], "color", COLOR, "");
+      agsafeset(nodos[nodos_a_traversar[i]], "color", CAMINO_COLOR, "");
       agsafeset(nodos[nodos_a_traversar[i]], "style", "filled", "");
    }
    agsafeset(aristas[findArista(grafo, nodos_a_traversar[0], nodos_a_traversar[1])], "label", "inicio", "");
    for(int i = 1; i < cantidadNodos; i++)
-      agsafeset(aristas[findArista(grafo, nodos_a_traversar[i - 1], nodos_a_traversar[i])], "color", COLOR, "");
+      agsafeset(aristas[findArista(grafo, nodos_a_traversar[i - 1], nodos_a_traversar[i])], "color", CAMINO_COLOR, "");
    agsafeset(aristas[findArista(grafo, nodos_a_traversar[cantidadNodos - 2], nodos_a_traversar[cantidadNodos - 1])], "label", "final", "");
 }
 
