@@ -12,10 +12,30 @@ Grafo *createGrafo(unsigned int cantidadNodos){
    return grafo;
 }
 
+//ineficiente
+int findArista(Grafo *grafo, int src, int dst){
+   for(int i = 0; i < grafo->cantidadAristas; i++){
+      int gr_src = grafo->aristas[i]->src,
+          gr_dst = grafo->aristas[i]->dst;
+      if((gr_src == src && gr_dst == dst) ||
+            (gr_dst == src && gr_src == dst))
+         return i;
+   }
+   return -1;
+}
+
 void addArista(Grafo *grafo, int nodo_src, int nodo_dst){
    if(nodo_src >= grafo->cantidadNodos || nodo_src < 0 ||
          nodo_dst >= grafo->cantidadNodos || nodo_dst < 0)
       return;
+   Arista **tmp = malloc(sizeof(Arista*) * grafo->cantidadAristas + 1);
+   memcpy(tmp, grafo->aristas, sizeof(Arista*) * grafo->cantidadAristas);
+   free(grafo->aristas);
+   grafo->aristas = tmp;
+   Arista *ar = malloc(sizeof(Arista));
+   ar->src = nodo_src;
+   ar->dst = nodo_dst;
+   grafo->aristas[grafo->cantidadAristas++] = ar;
    grafo->nodos[nodo_src][nodo_dst] = 1;
    grafo->nodos[nodo_dst][nodo_src] = 1;
 }
@@ -89,17 +109,19 @@ bool cicloEnGrafo(Grafo *grafo){
 }
 
 bool 
-recurseGrafoCamino(bool *visitado, int *trayecto, int *nodosTraversados, int prevNodo, 
-      int nodoActual, int dst, Grafo *grafo){
+recurseGrafoCamino(bool *visitado, int *trayecto, int *aristas, 
+      int *nodosTraversados, int prevNodo, int nodoActual, int dst, Grafo *grafo){
    if(visitado[nodoActual]++)
       return false;
+   if((*nodosTraversados) > 0)
+      aristas[(*nodosTraversados) - 1] = findArista(grafo, prevNodo, nodoActual);
    trayecto[(*nodosTraversados)++] = nodoActual;
    if(nodoActual == dst)
       return true;
    for(int i = 0; i < grafo->cantidadNodos; i++){
       if(grafo->nodos[nodoActual][i] && i != prevNodo && i != nodoActual){
-         if(recurseGrafoCamino(visitado, trayecto, nodosTraversados, 
-                  nodoActual, i, dst, grafo))
+         if(recurseGrafoCamino(visitado, trayecto, aristas,
+                  nodosTraversados, nodoActual, i, dst, grafo))
             return true;
       }
    }
@@ -107,13 +129,19 @@ recurseGrafoCamino(bool *visitado, int *trayecto, int *nodosTraversados, int pre
    return false;
 }
 
-int caminoValido(Grafo *grafo, int **ret_trayecto, int src, int dst){
+int caminoValido(Grafo *grafo, int **ret_trayecto, int **ret_aristas, int src, int dst){
    bool *visitado = malloc(sizeof(int) * grafo->cantidadNodos);
-   int *trayecto = malloc(sizeof(int) * grafo->cantidadNodos);
+   for(int i = 0; i < grafo->cantidadNodos; i++)
+      visitado[i] = 0;
+   int *trayecto = malloc(sizeof(int) * grafo->cantidadNodos), 
+       *aristas = malloc(sizeof(int) * grafo->cantidadAristas);
    int nodosTraversados = 0;
-   recurseGrafoCamino(visitado, trayecto, &nodosTraversados, -1, src, dst, grafo);
+   recurseGrafoCamino(visitado, trayecto, aristas, &nodosTraversados,
+         -1, src, dst, grafo);
    (*ret_trayecto) = malloc(sizeof(int) * nodosTraversados);
+   (*ret_aristas) = malloc(sizeof(int) * nodosTraversados - 1);
    memcpy((*ret_trayecto), trayecto, sizeof(int) * (nodosTraversados));
+   memcpy((*ret_aristas), aristas, sizeof(int) * (nodosTraversados - 1));
    return nodosTraversados;
 }
 

@@ -45,6 +45,7 @@ int main(int argc, char **argv)
 
     /* Set an attribute - in this case one that affects the visible rendering */
     agsafeset(n, "color", "red", "");
+    agsafeset(e, "color", "red", "");
 
     /* Compute a layout using layout engine from command line args */
     gvLayoutJobs(gvc, g);

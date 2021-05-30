@@ -2,8 +2,9 @@
 #define DRAW_H
 
 #include <gvc.h>
-#include "cgraph.h"
 #include "grafo.h"
+
+#define COLOR "skyblue"
 
 static GVC_t *gvc;
 static Agraph_t *g;
@@ -12,7 +13,8 @@ static Agnode_t **nodos;
 static Agedge_t **aristas;
 static int cantAristas = 0;
 
-static void initGrafo(unsigned int cantidadNodos);
-static void agAddArista(int src, int dst);
+void initGrafo(unsigned int cantidadNodos);
+void agAddArista(int src, int dst);
+void colorearCamino(int src, int dst);
 
 #endif
