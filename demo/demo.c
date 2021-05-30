@@ -47,7 +47,7 @@ int main(int argc, char **argv)
     agsafeset(n, "color", "red", "");
 
     /* Compute a layout using layout engine from command line args */
-    //gvLayoutJobs(gvc, g);
+    gvLayoutJobs(gvc, g);
 
     /* Write the graph according to -T and -o options */
     gvRender(gvc, g, "pdf", stdout);

@@ -98,7 +98,8 @@ recurseGrafoCamino(bool *visitado, int *trayecto, int *nodosTraversados, int pre
       return true;
    for(int i = 0; i < grafo->cantidadNodos; i++){
       if(grafo->nodos[nodoActual][i] && i != prevNodo && i != nodoActual){
-         if(recurseGrafoCamino(visitado, trayecto, nodosTraversados, nodoActual, i, dst, grafo))
+         if(recurseGrafoCamino(visitado, trayecto, nodosTraversados, 
+                  nodoActual, i, dst, grafo))
             return true;
       }
    }

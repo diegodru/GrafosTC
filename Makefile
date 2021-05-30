@@ -20,7 +20,7 @@ $(OBJ): obj/%.o : src/%.c | $(OBJDIR)
 	$(CC) -c $< -I$(INCDIR) -o $@
 
 $(addprefix $(OBJDIR)/, main.o ): $(addprefix $(SRCDIR)/, grafo.h)
-$(addprefix $(OBJDIR)/, grafo.o): $(addprefix $(SRCDIR)/, grafo.h common.h)
+$(addprefix $(OBJDIR)/, grafo.o draw.o): $(addprefix $(SRCDIR)/, grafo.h common.h)
 
 $(OBJDIR): 
 	@mkdir -p $(OBJDIR)
