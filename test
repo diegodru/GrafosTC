@@ -1,0 +1,8 @@
+graph G {
+   {node [width=.3, height=.3, shape=circle, style=filled, color=green] run rubl}
+
+   {edge [style=invis, color=red]}
+   run -- intr;
+   intr -- runbl;
+   runbl -- run;
+}
