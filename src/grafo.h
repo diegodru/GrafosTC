@@ -23,6 +23,7 @@ int sumaGrados(Grafo *grafo);
 int minGrado(Grafo *grafo);
 
 bool cicloEnGrafo(Grafo *grafo);
+bool validarCamino(Grafo *grafo, int *nodos_trayecto, int nodos_a_traversar);
 int caminoValido(Grafo *grafo, int **ret_trayecto, int **ret_aristas, int src, int dst);
 
 #endif
