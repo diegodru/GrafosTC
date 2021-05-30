@@ -1,9 +1,8 @@
-#include "cgraph.h"
 #include "grafo.h"
 #include "draw.h"
-#include "gvc.h"
 #include "menu.h"
 
+#define PDF_FILE "grafo.pdf"
 #define CAMINO_COLOR "skyblue"
 #define SHAPE "circle"
 
@@ -14,13 +13,6 @@ static Agnode_t **nodos;
 static Agedge_t **aristas;
 static int cantAristas;
 
-/*
-void initGrafo(unsigned int cantidadNodos, GVC_t **gvc, 
-      Agraph_t **g, Grafo **grafo);
-void agAddArista(Grafo **graf, int src, int dst);
-void colorearCamino(int src, int dst);
-void colorearCaminoValido(int *nodos_a_traversar, int cantidadNodos);
-*/
 void menuColorearValidarCamino(FILE *pdf){
    printf("Ingrese una lista con cada nodo\npor el cual desea traversar. (Cada Nodo separado por una coma ','): ");
    char str[256];
@@ -39,7 +31,7 @@ void menuColorearValidarCamino(FILE *pdf){
       resetColors();
    else
       colorearCaminoValido(trayecto, tamano);
-   pdf = fopen("test.pdf", "w");
+   pdf = fopen(PDF_FILE, "w");
    gvLayout(gvc, g, "neato");
    gvLayoutJobs(gvc, g);
    gvRender(gvc, g, "pdf", pdf);
@@ -57,7 +49,7 @@ void menuColorearBuscarCamino(FILE *pdf){
    scanf("%s", buf);
    dst = atoi(buf);
    colorearCamino(src, dst);
-   pdf = fopen("test.pdf", "w");
+   pdf = fopen(PDF_FILE, "w");
    gvLayout(gvc, g, "neato");
    gvLayoutJobs(gvc, g);
    gvRender(gvc, g, "pdf", pdf);
@@ -152,51 +144,6 @@ void colorearCaminoValido(int *nodos_a_traversar, int cantidadNodos){
 }
 
 int main(int argc, char *argv[]){
-   /*
-   Grafo *grafo = createGrafo(6);
-   addArista(grafo, 0, 5);
-   addArista(grafo, 5, 2);
-   addArista(grafo, 2, 1);
-   addArista(grafo, 3, 4);
-   addArista(grafo, 4, 5);
-   addArista(grafo, 5, 3);
-   printf("Ciclo: %i\n", cicloEnGrafo(grafo));
-   int *tr, *ar;
-   int n = caminoValido(grafo, &tr, &ar, 1, 3);
-   printf("Nodos Traversados: %i\n", n);
-   for(int i = 0; i < n; i++)
-      printf("%i\t", tr[i]);
-   printf("\n");
-   for(int i = 0; i < n - 1; i++)
-      printf("%i\t", ar[i]);
-   printf("\n");
-   printf("Grado del grafo: %i\n", gradoGrafo(grafo));
-   printf("Grado min: %i\n", minGrado(grafo));
-   printf("Suma de grados: %i\n", sumaGrados(grafo));
-   int nodosATravesar[] = { 1, 2, 5 };
-   printf("Valido: %i\n", validarCamino(grafo, nodosATravesar, 3));
-   //printMatriz(grafo);
-   */
-   /*
-   initGrafo(6, &gvc, &g, &grafo, &nodos);
-   agAddArista(0, 5);
-   agAddArista(5, 2);
-   agAddArista(2, 1);
-   agAddArista(3, 4);
-   agAddArista(4, 5);
-   agAddArista(5, 3);
-   agAddArista(1, 4);
-   gvLayout(gvc, g, "neato");
-   int nodosATravesar[] = { 1, 2, 5 };
-   colorearCaminoValido(nodosATravesar, 3);
-   
-   //colorearCamino(atoi(argv[1]), atoi(argv[2]));
-   gvLayoutJobs(gvc, g);
-   gvRender(gvc, g, "pdf", stdout);
-   gvFreeLayout(gvc, g);
-   agclose(g);
-   return(gvFreeContext(gvc));
-   */
    FILE *pdf;
    while(1){
       printf(BANNER "\n");
@@ -251,7 +198,7 @@ int main(int argc, char *argv[]){
             break;
          case 9:
             resetColors();
-            pdf = fopen("test.pdf", "w");
+            pdf = fopen(PDF_FILE, "w");
             gvLayout(gvc, g, "neato");
             gvLayoutJobs(gvc, g);
             gvRender(gvc, g, "pdf", pdf);
