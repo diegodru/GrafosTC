@@ -25,10 +25,12 @@ int findArista(Grafo *grafo, int src, int dst){
    return -1;
 }
 
-void addArista(Grafo *grafo, int nodo_src, int nodo_dst){
+bool addArista(Grafo *grafo, int nodo_src, int nodo_dst){
    if(nodo_src >= grafo->cantidadNodos || nodo_src < 0 ||
       nodo_dst >= grafo->cantidadNodos || nodo_dst < 0)
-      return;
+      return false;
+   if(grafo->nodos[nodo_src][nodo_dst] || grafo->nodos[nodo_src][nodo_dst])
+      return false;
    Arista **tmp = (Arista**)malloc(sizeof(Arista*) * grafo->cantidadAristas + 1);
    memcpy(tmp, grafo->aristas, sizeof(Arista*) * grafo->cantidadAristas);
    free(grafo->aristas);
@@ -39,6 +41,7 @@ void addArista(Grafo *grafo, int nodo_src, int nodo_dst){
    grafo->aristas[grafo->cantidadAristas++] = ar;
    grafo->nodos[nodo_src][nodo_dst] = 1;
    grafo->nodos[nodo_dst][nodo_src] = 1;
+   return true;
 }
 
 void printMatriz(Grafo *grafo){
@@ -153,8 +156,9 @@ int caminoValido(Grafo *grafo, int **ret_trayecto, int **ret_aristas, int src, i
    int *trayecto = malloc(sizeof(int) * grafo->cantidadNodos), 
        *aristas = malloc(sizeof(int) * grafo->cantidadAristas);
    int nodosTraversados = 0;
-   recurseGrafoCamino(visitado, trayecto, aristas, &nodosTraversados,
-         -1, src, dst, grafo);
+   if(!recurseGrafoCamino(visitado, trayecto, aristas, &nodosTraversados,
+         -1, src, dst, grafo))
+      return 0;
    (*ret_trayecto) = malloc(sizeof(int) * nodosTraversados);
    (*ret_aristas) = malloc(sizeof(int) * nodosTraversados - 1);
    memcpy((*ret_trayecto), trayecto, sizeof(int) * (nodosTraversados));

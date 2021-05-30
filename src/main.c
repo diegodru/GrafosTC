@@ -21,6 +21,49 @@ void agAddArista(Grafo **graf, int src, int dst);
 void colorearCamino(int src, int dst);
 void colorearCaminoValido(int *nodos_a_traversar, int cantidadNodos);
 */
+void menuColorearValidarCamino(FILE *pdf){
+   printf("Ingrese una lista con cada nodo\npor el cual desea traversar. (Cada Nodo separado por una coma ','): ");
+   char str[256];
+   scanf("%s", str);
+   char *tok = strtok(str, ",");
+   int *trayecto = malloc(0), tamano = 0;
+   while(tok){
+      int *tmp = malloc(sizeof(int) * tamano + 1);
+      memcpy(tmp, trayecto, sizeof(int) * tamano);
+      tmp[tamano++] = atoi(tok);
+      free(trayecto);
+      trayecto = tmp;
+      tok = strtok(NULL, ",");
+   }
+   if(!validarCamino(grafo, trayecto, tamano))
+      resetColors();
+   else
+      colorearCaminoValido(trayecto, tamano);
+   pdf = fopen("test.pdf", "w");
+   gvLayout(gvc, g, "neato");
+   gvLayoutJobs(gvc, g);
+   gvRender(gvc, g, "pdf", pdf);
+   gvFreeLayout(gvc, g);
+   fclose(pdf);
+}
+
+void menuColorearBuscarCamino(FILE *pdf){
+   char buf[8];
+   int src, dst;
+   printf("Ingrese Nodo de inicio: ");
+   scanf("%s", buf);
+   src = atoi(buf);
+   printf("Ingrese Nodo de destino: ");
+   scanf("%s", buf);
+   dst = atoi(buf);
+   colorearCamino(src, dst);
+   pdf = fopen("test.pdf", "w");
+   gvLayout(gvc, g, "neato");
+   gvLayoutJobs(gvc, g);
+   gvRender(gvc, g, "pdf", pdf);
+   gvFreeLayout(gvc, g);
+   fclose(pdf);
+}
 
 void anadirArista(){
    char buf[8];
@@ -60,7 +103,8 @@ void initGrafo(unsigned int cantidadNodos, GVC_t **gvc, Agraph_t **g,
 }
 
 void agAddArista(Grafo **graf, int src, int dst){
-   addArista(*graf, src, dst);
+   if(!addArista(*graf, src, dst))
+      return;
    Agedge_t **tmp = malloc(sizeof(Agedge_t*) * cantAristas + 1);
    memcpy(tmp, aristas, sizeof(Agedge_t*) * cantAristas);
    free(aristas);
@@ -69,18 +113,29 @@ void agAddArista(Grafo **graf, int src, int dst){
    aristas[cantAristas++] = agedge(g, nodos[src], nodos[dst], 0, 1);
 }
 
+void resetColors(){
+   for(int i = 0; i < grafo->cantidadNodos; i++){
+      agsafeset(nodos[i], "color", "black", "");
+      agsafeset(nodos[i], "style", "solid", "");
+   }
+   for(int i = 0; i < grafo->cantidadAristas; i++){
+      agsafeset(aristas[i], "color", "black", "");
+      agsafeset(aristas[i], "label", "", "");
+   }
+}
+
 void colorearCamino(int src, int dst){
    int *trayecto, *tr_aristas;
-   int nodosTraversados = caminoValido(grafo, &trayecto, &tr_aristas, src, dst);
+   int nodosTraversados;
+   if(!(nodosTraversados = caminoValido(grafo, &trayecto, &tr_aristas, src, dst)))
+         return;
    for(int i = 0; i < nodosTraversados; i++){
       agsafeset(nodos[trayecto[i]], "color", CAMINO_COLOR, "");
       agsafeset(nodos[trayecto[i]], "style", "filled", "");
    }
-   agsafeset(aristas[tr_aristas[0]], "label", "inicio", "");
    for(int i = 0; i < nodosTraversados - 1; i++){
       agsafeset(aristas[tr_aristas[i]], "color", CAMINO_COLOR, "");
    }
-   agsafeset(aristas[tr_aristas[nodosTraversados - 2]], "label", "final", "");
 }
 
 void colorearCaminoValido(int *nodos_a_traversar, int cantidadNodos){
@@ -144,7 +199,9 @@ int main(int argc, char *argv[]){
    */
    FILE *pdf;
    while(1){
-      printf(BANNER "\n\
+      printf(BANNER "\n");
+      if(!grafo)
+         printf("\
             1.Crear Grafo\n");
       if(grafo)
          printf("\
@@ -155,17 +212,22 @@ int main(int argc, char *argv[]){
             6.Calcular el grado minimo de las vertices\n\
             7.Validar Camino\n\
             8.Detectar Ciclo\n\
-            9.Salvar grafo en un pdf\n");
+            9.Salvar grafo en un pdf\n\
+            10.Buscar un Camino y salvarlo en el pdf\n\
+            11.Validar Camnio y salvarlo en el pdf\n");
       printf("\
-            10.Salir\n\n");
+            12.Salir\n\n");
       char buf[10];
       printf("Seleccione una Opcion: ");
       scanf("%s", buf);
       if(atoi(buf) == 0)
          continue;
+      if(!grafo && atoi(buf) > 1 && atoi(buf) < 11)
+         continue;
       switch(atoi(buf)){
          case 1:
-            crearGrafo();
+            if(!grafo)
+               crearGrafo();
             break;
          case 2:
             anadirArista();
@@ -188,6 +250,7 @@ int main(int argc, char *argv[]){
             printf("%s"RESET"\n", (cicloEnGrafo(grafo) ? VERDE"Si hay un ciclo en el grafo!" : ROJO"No se encontraron ciclos"));
             break;
          case 9:
+            resetColors();
             pdf = fopen("test.pdf", "w");
             gvLayout(gvc, g, "neato");
             gvLayoutJobs(gvc, g);
@@ -196,8 +259,12 @@ int main(int argc, char *argv[]){
             fclose(pdf);
             break;
          case 10:
+            menuColorearBuscarCamino(pdf);
+            break;
          case 11:
-         default:
+            menuColorearValidarCamino(pdf);
+            break;
+         case 12:
             agclose(g);
             return(gvFreeContext(gvc));
             exit(0);

@@ -5,11 +5,10 @@
 #include "draw.h"
 #include "grafo.h"
 
-/*
-void printGrafoData();
+void menuColorearValidarCamino(FILE *pdf);
+void menuColorearBuscarCamino(FILE *pdf);
 void crearGrafo();
 void anadirArista();
 void menu_principal();
-*/
 
 #endif

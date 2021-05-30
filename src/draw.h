@@ -19,5 +19,6 @@ void initGrafo(unsigned int cantidadNodos, GVC_t **gvc,
 void agAddArista(Grafo **graf, int src, int dst);
 void colorearCamino(int src, int dst);
 void colorearCaminoValido(int *nodos_a_traversar, int cantidadNodos);
+void resetColors();
 
 #endif

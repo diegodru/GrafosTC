@@ -16,7 +16,7 @@ typedef struct{
 
 Grafo *createGrafo(unsigned int cantidadNodos);
 int findArista(Grafo *grafo, int src, int dst);
-void addArista(Grafo *grafo, int nodo_src, int nodo_dst);
+bool addArista(Grafo *grafo, int nodo_src, int nodo_dst);
 void printMatriz(Grafo *grafo);
 int gradoGrafo(Grafo *grafo);
 int sumaGrados(Grafo *grafo);
